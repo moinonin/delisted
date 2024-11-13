@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import json
-import re
+import re, sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -85,8 +85,9 @@ def fetch_bybit_delisted(url: str):
             delisted_dict.append(result)
 
         try:
-            status_code = 200
-            return delisted_dict
+            if delisted_dict:
+                status_code = 200
+                return delisted_dict
         except Exception as e:
             print(e)
         finally:
