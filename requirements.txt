@@ -4,4 +4,4 @@ requests
 fastapi
 uvicorn
 bs4
-gunicorn
+selenium
