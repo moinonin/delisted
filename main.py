@@ -1,13 +1,13 @@
 from fastapi import FastAPI
-from scrape import fetch_delisted, exchanges  # Import your scraping function
+from scrape import fetch_gateio_delisted, fetch_bybit_delisted, exchanges  # Import your scraping function
 
 
 app = FastAPI()
 
 @app.get("/api/delisted/{exchange}")
 async def scrape(exchange: str):
-    data = fetch_delisted(f'{exchanges[0].get(f"url")}')  # Call your scraping function
-    return data               # FastAPI automatically serializes to JSON
+    func_name = f'fetch_{exchange}_delisted'
+    return globals()[func_name](f"{exchanges[0].get('url')}")
 
 if __name__ == '__main__':
     import uvicorn
