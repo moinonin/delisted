@@ -8,10 +8,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 
 # Configure headless
-options = Options()
-options.headless = True
-options.add_argument("--headless=new")
-driver = webdriver.Firefox(options=options)
+opts = Options()
+opts.headless = True
+opts.add_argument("--headless=new")
+
+driver = webdriver.Firefox(options=opts)
+
 # URL to scrape
 exchanges = [
         {
@@ -79,7 +81,7 @@ def fetch_bybit_delisted(url: str):
         matches = re.findall(pattern, content)
         delisted_dict = []
         for item in matches:
-            pair = item.split(' ')[2]
+            pair = item.split(' ')[2].split('USDT')[0]
             symbol = pair + '/' + 'USDT' + ':USDT'
             result = {'asset': pair, 'symbol': f'{symbol}'}
             delisted_dict.append(result)
@@ -93,8 +95,9 @@ def fetch_bybit_delisted(url: str):
         finally:
             driver.quit()
     except Exception as e:
+        print(e)
         status_code = 401
         print(f"Failed to retrieve the webpage. Status code: {status_code}")
-        sys.exit('exit-requested!')
+        #sys.exit('exit-requested!')
 
 #print(fetch_bybit_delisted(exchanges[1].get('url')))

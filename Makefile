@@ -1,3 +1,5 @@
+install:
+	apt install firefox xorg
 test:
 	MOZ_HEADLESS=1 python main.py
 run:
