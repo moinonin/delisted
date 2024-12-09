@@ -63,12 +63,15 @@ def fetch_gateio_delisted(url: str):
         })
 
     df = pd.DataFrame(announcements)
-    pairs = [pair for pair in df['Parenthesis Text'] if pair]
+    pairs = [item.strip() for sublist in df['Parenthesis Text'].dropna() for item in sublist.split(',') if item.strip()]
+    
     delisted_dict = []
     for pair in pairs:
-        result = {'asset': pair, 'symbol': f'{pair}/USDT:USDT'}
+        result = {
+            'asset': pair,
+            'symbol': pair + '/USDT:USDT'
+        }
         delisted_dict.append(result)
-
     return delisted_dict
 
 def fetch_bybit_delisted(url: str):
