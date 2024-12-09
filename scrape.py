@@ -2,16 +2,18 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import json
-import re
+import re, sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 
 # Configure headless
-options = Options()
-options.headless = True
-options.add_argument("--headless=new")
-driver = webdriver.Firefox(options=options)
+opts = Options()
+opts.headless = True
+opts.add_argument("--headless=new")
+
+driver = webdriver.Firefox(options=opts)
+
 # URL to scrape
 exchanges = [
         {
@@ -61,12 +63,15 @@ def fetch_gateio_delisted(url: str):
         })
 
     df = pd.DataFrame(announcements)
-    pairs = [pair for pair in df['Parenthesis Text'] if pair]
+    pairs = [item.strip() for sublist in df['Parenthesis Text'].dropna() for item in sublist.split(',') if item.strip()]
+    
     delisted_dict = []
     for pair in pairs:
-        result = {'asset': pair, 'symbol': f'{pair}/USDT:USDT'}
+        result = {
+            'asset': pair,
+            'symbol': pair + '/USDT:USDT'
+        }
         delisted_dict.append(result)
-
     return delisted_dict
 
 def fetch_bybit_delisted(url: str):
@@ -79,21 +84,23 @@ def fetch_bybit_delisted(url: str):
         matches = re.findall(pattern, content)
         delisted_dict = []
         for item in matches:
-            pair = item.split(' ')[2]
+            pair = item.split(' ')[2].split('USDT')[0]
             symbol = pair + '/' + 'USDT' + ':USDT'
             result = {'asset': pair, 'symbol': f'{symbol}'}
             delisted_dict.append(result)
 
         try:
-            status_code = 200
-            return delisted_dict
+            if delisted_dict:
+                status_code = 200
+                return delisted_dict
         except Exception as e:
             print(e)
         finally:
             driver.quit()
     except Exception as e:
+        print(e)
         status_code = 401
         print(f"Failed to retrieve the webpage. Status code: {status_code}")
-        sys.exit('exit-requested!')
+        #sys.exit('exit-requested!')
 
 #print(fetch_bybit_delisted(exchanges[1].get('url')))
