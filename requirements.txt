@@ -1,8 +1,7 @@
-pandas
-numpy
 requests
 fastapi
 uvicorn
 bs4
 selenium
 gunicorn
+fire

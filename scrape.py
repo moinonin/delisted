@@ -1,7 +1,6 @@
-import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import json
+import fire
 import re, sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -70,8 +69,8 @@ def fetch_bybit_delisted(url: str):
         delisted_dict = []
         for item in matches:
             pair = item.split(' ')[2].split('USDT')[0]
-            symbol = pair + '/' + 'USDT' + ':USDT'
-            result = {'asset': pair, 'symbol': f'{symbol}'}
+            symbol = f'{pair}/USDT:USDT'
+            result = {'asset': pair, 'symbol': symbol}
             delisted_dict.append(result)
 
         return delisted_dict or []
@@ -112,3 +111,20 @@ def fetch_binance_delisted(url: str):
     finally:
         if driver:
             driver.quit()
+
+def main(exchange: str):
+    if exchange.lower() == 'gateio':
+        return fetch_gateio_delisted(exchanges[0].get('url'))
+    elif exchange.lower() == 'bybit':
+        return fetch_bybit_delisted(exchanges[1].get('url'))
+    elif exchange.lower() == 'binance':
+        return fetch_binance_delisted(exchanges[2].get('url'))
+    else:
+        return {"error": f"Exchange '{exchange}' not found"}
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        exchange = sys.argv[1]
+        fire.Fire(main)
+    else:
+        print("Usage: python script.py <exchange_name>")
