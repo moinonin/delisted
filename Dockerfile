@@ -7,11 +7,11 @@ RUN apt-get update && apt-get install -y \
     xvfb \
     && rm -rf /var/lib/apt/lists/*
 
-# Install geckodriver
-RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz \
-    && tar -xzf geckodriver-v0.33.0-linux64.tar.gz \
+# Install geckodriver 0.36.0
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz \
+    && tar -xzf geckodriver-v0.36.0-linux64.tar.gz \
     && mv geckodriver /usr/local/bin/ \
-    && rm geckodriver-v0.33.0-linux64.tar.gz
+    && rm geckodriver-v0.36.0-linux64.tar.gz
 
 WORKDIR /app
 

@@ -1,12 +1,38 @@
 version: '3.8'
 
 services:
-  api:
-    build: .
+  delisted:
+    image: moinonin/delisted:v0.1
+    restart: unless-stopped
+    container_name: delisted_api
+    volumes:
+      - .:/app
     ports:
       - "8000:8000"
     environment:
+      - TZ=Europe/Helsinki
       - MOZ_HEADLESS=1
-    volumes:
-      - .:/app
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    depends_on:
+      - redis
+    networks:
+      - delisted_network
+
+  redis:
+    image: redis:7-alpine
     restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - delisted_network
+
+volumes:
+  redis_data:
+
+networks:
+  delisted_network:
+    driver: bridge
